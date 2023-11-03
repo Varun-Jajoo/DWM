@@ -1,8 +1,8 @@
-import pydoc
+
 
 import matplotlib.pyplot as plt
 import numpy as np
-import matplotlib.pyplot as mp
+
 data_dict=np.array([[1,4],[3,2],[0,1] ,[3,4],[4,2],[3,1]])
 random_data=np.random.rand(50,2)*5
 data=np.vstack((data_dict,random_data))
