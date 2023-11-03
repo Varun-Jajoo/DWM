@@ -1,0 +1,46 @@
+import pandas as pd
+df = pd.read_csv("/Users/shreyansjain/PycharmProjects/pracs/naive.csv")
+val = df.values.tolist()
+print(val)
+
+data = [
+    ["red","sports","domestic","yes"],
+    ["red","sports","domestic","no"],
+    ["red","sports","domestic","yes"],
+    ["yellow","sports","domestic","no"],
+    ["yellow","sports","imported","yes"],
+    ["yellow","sports","imported","no"],
+    ["yellow","suv","imported","yes"],
+    ["yellow","suv","imported","no"],
+    ["yellow","suv","domestic","no"],
+    ["red","suv","imported","no"],
+    ["red","sports","imported","yes"],
+]
+
+def cal_prob(color,type,origin,label):
+    count_label = sum(1 for c, t, o, l in data if l == label)
+    p_label = count_label / len(data)
+    count_color = sum(1 for c, t, o, l in data if c == color and l ==label) / count_label
+    count_type = sum(1 for c, t, o, l in data if t == type and l == label) / count_label
+    count_origin = sum(1 for c, t, o, l in data if o == origin and l == label) / count_label
+    return count_color,count_type,count_origin,p_label
+
+def predict(color,type,origin):
+    labels = set(label for _,_,_,label in data)
+    probs=[]
+    print("prob of classes")
+
+    for label in labels:
+        p_color,p_type,p_origin,p_label = cal_prob(color,type,origin,label)
+        prob = p_color*p_type*p_origin*p_label
+        probs.append((label,prob))
+
+    print(probs)
+    return probs
+
+
+predicted = predict("yellow","suv","domestic")
+if predicted[0] == "yes":
+    print("Prediction is Yes")
+else:
+    print("Prediction is No")
