@@ -1,51 +1,43 @@
 import numpy as np
 
-n = 4
-adj_matrix = [[0, 1, 1, 1],
+damping_factor = 0.85
+max_iterations = 10
+tolerance = 1e-5
+
+def calculate_pagerank(adjacency_matrix):
+    num_pages = len(adjacency_matrix)
+    teleport_prob = (1 - damping_factor) / num_pages
+    pagerank = np.full(num_pages, 1.0 / num_pages)
+
+    for iteration in range(max_iterations):
+        new_pagerank = np.zeros(num_pages)
+
+        for i in range(num_pages):
+            for j in range(num_pages):
+                if adjacency_matrix[j][i] == 1:
+                    num_links_on_page_j = sum(adjacency_matrix[j])
+                    new_pagerank[i] += damping_factor * (pagerank[j] / num_links_on_page_j)
+                    new_pagerank[i] += teleport_prob
+
+        pagerank = new_pagerank
+
+        # Calculate and print PageRank after each iteration
+        print(f'Iteration {iteration + 1}:')
+        for i, score in enumerate(pagerank):
+            print(f'Page {i + 1}: {score:.4f}')
+
+    return pagerank
+
+graph = np.array([[0, 1, 1, 1],
               [0, 0, 0, 1],
               [0, 1, 0, 1],
-              [0, 0, 1, 1]]
+              [0, 0, 1, 0]])
 
-out_deg = []
+pagerank_scores = calculate_pagerank(graph)
 
-for i in range(n):
-    out_count = 0
-    for j in range(n):
-        if adj_matrix[i][j] == 1:
-            out_count += 1
-    out_deg.append(out_count)
+# Sort the PageRank scores with numbers
+sorted_pagerank = sorted(enumerate(pagerank_scores), key=lambda x: x[1], reverse=True)
 
-for row in adj_matrix:
-    print(row)
-
-for i in range(n):
-    print(f'node {i + 1} = {out_deg[i]}')
-
-a = np.zeros((n, n), dtype=float)
-
-for i in range(n):
-    for j in range(n):
-        if adj_matrix[i][j] == 1:
-            a[i][j] = round(1 / out_deg[j], 2)
-
-print(a)
-
-X = np.ones((n, 1))
-prev = np.array([])
-
-for i in range(0, 7):
-    X = a @ X
-    prev = X
-    print(X)
-
-ans = dict()
-
-for i in range(0, X.size):
-    ans[f"Page : {i + 1}"] = X[i][0]
-
-ans = dict(sorted(ans.items(), key=lambda item: -item[1])
-ctn = 1
-
-for i in ans:
-    print(f'Rank {ctn} : {i}')
-    ctn += 1
+print('\nSorted PageRank scores with numbers:')
+for i, (page, score) in enumerate(sorted_pagerank, start=1):
+    print(f'Rank {i}: Page {page + 1} - PageRank: {score:.4f}')
